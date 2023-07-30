@@ -21,6 +21,19 @@ class MoonSpinner():
     def __str__(self):
         return ''.join(self.sails) + ''.join(self.pents) + ''.join(self.tris)
 
+    def eq_rotation(self, other):
+        """ rotationally equal
+        """
+        found = False
+        r = -1
+        other_str = str(other)
+        for rotation in range(5):
+            self.rotate()
+            if str(self) == other_str:
+                found = True
+                r = rotation
+        return found, r
+
     def move(self, ind: Literal[0,1,2,3,4]):
         """ turn at the specified index
 
@@ -65,15 +78,45 @@ class MoonSpinner():
         self.tris[-2] = tmp
         self.tris[-1] = tmp_m1
 
+    def rotate(self):
+        """ rotate the whole things counter clockwise by one
+        """
+        tmp = self.sails[0]
+        for i in range(4):
+            self.sails[i] = self.sails[i+1]
+        self.sails[4] = tmp
+
+        tmp = self.pents[0]
+        for i in range(4):
+            self.pents[i] = self.pents[i+1]
+        self.pents[4] = tmp
+
+        tmp = self.tris[0]
+        tmp_p1 = self.tris[1]
+        for i in range(8):
+            self.tris[i] = self.tris[i+2]
+        self.tris[8] = tmp
+        self.tris[9] = tmp_p1
+
+    def in_list(self, l):
+        """ check if this spinner is represented in a list of strings
+        """
+        found = False
+        for rotation in range(5):
+            self.rotate()
+            if str(self) in l:
+                found = True
+        return found
+
 
 if __name__ == "__main__":
 
     # top center, top right, bottom right, bottom left, bottom left, top left, center  
-    start_sails = ['g','b','o','r','p','r']
+    start_sails = ['g','r','r','p','o','b']
     #top right, bottom right, bottom, bottom left, top left, center 'left', center 'right'
-    start_pents = ['o','b','r','o','g','g','b']
+    start_pents = ['g','o','g','r','b','b','o']
     # top left, and around cockwise, middle left middle right
-    start_tris = ['g','o','g','g','o','b','o','b','r','g','o','r']
+    start_tris = ['g','g','o','o','r','g','g','o','b','r','o','b']
 
     # start_sails = ['g','b','p','o','r','r']
     # start_pents = ['g','b','o','o','g','b','r']
@@ -105,11 +148,11 @@ if __name__ == "__main__":
     start_spinner.move(1)
     start_spinner.move(2)
     start_spinner.move(3)
-    start_spinner.move(0)
-    start_spinner.move(2)
-    start_spinner.move(4)
-    start_spinner.move(1)
-    start_spinner.move(2)
+    # start_spinner.move(0)
+    # start_spinner.move(2)
+    # start_spinner.move(4)
+    # start_spinner.move(1)
+    # start_spinner.move(2)
     start_spinner.trail = []
 
     # end_spinner.move(0)
@@ -136,14 +179,15 @@ if __name__ == "__main__":
                 spinner_new = copy.deepcopy(spinner)
                 spinner_new.move(i)
                 # breakpoint()
-                if str(spinner_new) not in start_explored:
+                if not spinner_new.in_list(start_explored):
                     new_spinners.append(spinner_new)
                     start_explored.append(str(spinner_new))
-                if str(spinner_new) in end_explored:
+                if spinner_new.in_list(end_explored):
                     print("Found a path to the end!")
                     for sp in end_spinners:
-                        if str(sp) == str(spinner_new):
-                            print(f"{len(spinner_new.trail + sp.trail[::-1])} moves: " + str(spinner_new.trail + sp.trail[::-1]))
+                        eq, r = sp.eq_rotation(spinner_new)
+                        if eq:
+                            print(f"{len(spinner_new.trail + sp.trail[::-1])} moves: " + str(spinner_new.trail + [f'r{r}'] + sp.trail[::-1]))
                     print(f"Explored {len(start_explored) + len(end_explored)} states!")
                     exit()
         start_spinners = new_spinners
@@ -152,14 +196,15 @@ if __name__ == "__main__":
             for i in range(5):
                 spinner_new = copy.deepcopy(spinner)
                 spinner_new.move(i)
-                if str(spinner_new) not in end_explored:
+                if not spinner_new.in_list(end_explored):
                     new_spinners.append(spinner_new)
                     end_explored.append(str(spinner_new))
-                if str(spinner_new) in start_explored:
+                if spinner_new.in_list(start_explored):
                     print("Found a path to the end!")
                     for sp in start_spinners:
-                        if str(sp) == str(spinner_new):
-                            print(f"{len(sp.trail + spinner_new.trail[::-1])} moves: " + str(sp.trail + spinner_new.trail[::-1]))
+                        eq, r = sp.eq_rotation(spinner_new)
+                        if eq:
+                            print(f"{len(sp.trail + spinner_new.trail[::-1])} moves: " + str(sp.trail + [f'r{r}'] +  spinner_new.trail[::-1]))
                     print(f"Explored {len(start_explored) + len(end_explored)} states!")
                     exit()
         end_spinners = new_spinners
