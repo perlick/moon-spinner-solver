@@ -131,29 +131,29 @@ if __name__ == "__main__":
     
     end_spinner = MoonSpinner(end_sails, end_pents, end_tris)
 
-    start_spinner = copy.deepcopy(end_spinner)
-    start_spinner.move(3)
-    start_spinner.move(0)
-    start_spinner.move(2)
-    start_spinner.move(4)
-    start_spinner.move(3)
-    start_spinner.move(0)
-    start_spinner.move(2)
-    start_spinner.move(4)
-    start_spinner.move(1)
-    start_spinner.move(3)
-    start_spinner.move(0)
-    start_spinner.move(2)
-    start_spinner.move(4)
-    start_spinner.move(1)
-    start_spinner.move(2)
-    start_spinner.move(3)
+    # start_spinner = copy.deepcopy(end_spinner)
+    # start_spinner.move(3)
+    # start_spinner.move(0)
+    # start_spinner.move(2)
+    # start_spinner.move(4)
+    # start_spinner.move(3)
+    # start_spinner.move(0)
+    # start_spinner.move(2)
+    # start_spinner.move(4)
+    # start_spinner.move(1)
+    # start_spinner.move(3)
     # start_spinner.move(0)
     # start_spinner.move(2)
     # start_spinner.move(4)
     # start_spinner.move(1)
     # start_spinner.move(2)
-    start_spinner.trail = []
+    # start_spinner.move(3)
+    # start_spinner.move(0)
+    # start_spinner.move(2)
+    # start_spinner.move(4)
+    # start_spinner.move(1)
+    # start_spinner.move(2)
+    # start_spinner.trail = []
 
     # end_spinner.move(0)
 
@@ -172,6 +172,11 @@ if __name__ == "__main__":
     found = False
     depth = 0
 
+    """ Doing an BFS of the state graph from the starting state and ending state
+
+    Ensure that nodes are not visited twice. Consider all rotations of a state to be equal.
+    The first state that appears in both the starting exploration and the ending exploration is the most efficient solution. 
+    """
     while not found:
         new_spinners = []
         for spinner in start_spinners:
