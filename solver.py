@@ -1,6 +1,31 @@
 from typing import Literal
 import copy
+import tqdm
 
+
+class HashList():
+    def __init__(self):
+        """ list elements hashed and placed in dict[list[<type e>]]
+        """
+        self.d = {}
+        self.len = 0
+    
+    def add(self, e):
+        h = hash(e)
+        if h not in self.d:
+            self.d[h] = [e]
+        else:
+            self.d[h].append(e)
+        self.len += 1
+
+    def member(self, e):
+        h = hash(e)
+        if h in self.d and e in self.d[h]:
+            return True
+        else:
+            return False
+    def __len__(self):
+        return self.len
 
 class MoonSpinner():
     """ represents a puzzle state
@@ -104,7 +129,7 @@ class MoonSpinner():
         found = False
         for rotation in range(5):
             self.rotate()
-            if str(self) in l:
+            if l.member(str(self)):
                 found = True
         return found
 
@@ -131,45 +156,46 @@ if __name__ == "__main__":
     
     end_spinner = MoonSpinner(end_sails, end_pents, end_tris)
 
-    # start_spinner = copy.deepcopy(end_spinner)
-    # start_spinner.move(3)
-    # start_spinner.move(0)
-    # start_spinner.move(2)
-    # start_spinner.move(4)
-    # start_spinner.move(3)
-    # start_spinner.move(0)
-    # start_spinner.move(2)
-    # start_spinner.move(4)
-    # start_spinner.move(1)
-    # start_spinner.move(3)
-    # start_spinner.move(0)
-    # start_spinner.move(2)
-    # start_spinner.move(4)
-    # start_spinner.move(1)
-    # start_spinner.move(2)
-    # start_spinner.move(3)
-    # start_spinner.move(0)
-    # start_spinner.move(2)
-    # start_spinner.move(4)
-    # start_spinner.move(1)
-    # start_spinner.move(2)
-    # start_spinner.trail = []
+    start_spinner = copy.deepcopy(end_spinner)
+    start_spinner.move(3)
+    start_spinner.move(0)
+    start_spinner.move(2)
+    start_spinner.move(4)
+    start_spinner.move(3)
+    start_spinner.move(0)
+    start_spinner.move(2)
+    start_spinner.move(4)
+    start_spinner.move(1)
+    start_spinner.move(3)
+    start_spinner.move(0)
+    start_spinner.move(2)
+    start_spinner.move(4)
+    start_spinner.move(1)
+    start_spinner.move(2)
+    start_spinner.move(3)
+    start_spinner.move(0)
+    start_spinner.move(2)
+    start_spinner.move(4)
+    start_spinner.move(1)
+    start_spinner.move(2)
+    start_spinner.trail = []
 
     # end_spinner.move(0)
 
-    # print(str(end_spinner))
+    #print(str(end_spinner))
     # exit()
 
     start_spinners = []
     end_spinners = []
 
-    start_explored = [str(start_spinner)]
-    end_explored = [str(end_spinner)]
-
     start_spinners.append(start_spinner)
     end_spinners.append(end_spinner)
 
-    found = False
+    start_explored = HashList()
+    start_explored.add(str(start_spinner))
+    end_explored = HashList()
+    end_explored.add(str(end_spinner))
+
     depth = 0
 
     """ Doing an BFS of the state graph from the starting state and ending state
@@ -177,16 +203,18 @@ if __name__ == "__main__":
     Ensure that nodes are not visited twice. Consider all rotations of a state to be equal.
     The first state that appears in both the starting exploration and the ending exploration is the most efficient solution. 
     """
-    while not found:
+    while True:
         new_spinners = []
+        pb = tqdm.tqdm(total = len(start_spinners) + len(end_spinners), leave=False)
         for spinner in start_spinners:
+            pb.update(1)
             for i in range(5):
                 spinner_new = copy.deepcopy(spinner)
                 spinner_new.move(i)
                 # breakpoint()
                 if not spinner_new.in_list(start_explored):
                     new_spinners.append(spinner_new)
-                    start_explored.append(str(spinner_new))
+                    start_explored.add(str(spinner_new))
                 if spinner_new.in_list(end_explored):
                     print("Found a path to the end!")
                     for sp in end_spinners:
@@ -198,12 +226,13 @@ if __name__ == "__main__":
         start_spinners = new_spinners
         new_spinners = []
         for spinner in end_spinners:
+            pb.update(1)
             for i in range(5):
                 spinner_new = copy.deepcopy(spinner)
                 spinner_new.move(i)
                 if not spinner_new.in_list(end_explored):
                     new_spinners.append(spinner_new)
-                    end_explored.append(str(spinner_new))
+                    end_explored.add(str(spinner_new))
                 if spinner_new.in_list(start_explored):
                     print("Found a path to the end!")
                     for sp in start_spinners:
@@ -213,8 +242,9 @@ if __name__ == "__main__":
                     print(f"Explored {len(start_explored) + len(end_explored)} states!")
                     exit()
         end_spinners = new_spinners
+        pb.close()
         depth += 1
         print(f"Explored to depth: {str(depth)}\n\tnumber of states: {len(start_explored) + len(end_explored)}\n\tnumber of spinners: {len(start_spinners) + len(end_spinners)}")
-        # breakpoint()
+        
 
 
