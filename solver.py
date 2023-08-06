@@ -157,9 +157,9 @@ if __name__ == "__main__":
     end_spinner = MoonSpinner(end_sails, end_pents, end_tris)
 
     start_spinner = copy.deepcopy(end_spinner)
-    start_spinner.move(3)
-    start_spinner.move(0)
     start_spinner.move(2)
+    start_spinner.move(1)
+    start_spinner.move(0)
     start_spinner.move(4)
     start_spinner.move(3)
     start_spinner.move(0)
@@ -222,6 +222,9 @@ if __name__ == "__main__":
                         if eq:
                             print(f"{len(spinner_new.trail + sp.trail[::-1])} moves: " + str(spinner_new.trail + [f'r{r}'] + sp.trail[::-1]))
                     print(f"Explored {len(start_explored) + len(end_explored)} states!")
+                    file1 = open("solved_spinners.txt", "a")
+                    file1.write(str(spinner_new.trail + [f'r{r}'] + sp.trail[::-1]))
+                    file1.write("\n")
                     exit()
         start_spinners = new_spinners
         new_spinners = []
@@ -240,6 +243,9 @@ if __name__ == "__main__":
                         if eq:
                             print(f"{len(sp.trail + spinner_new.trail[::-1])} moves: " + str(sp.trail + [f'r{r}'] +  spinner_new.trail[::-1]))
                     print(f"Explored {len(start_explored) + len(end_explored)} states!")
+                    file1 = open("solved_spinners.txt", "a")
+                    file1.write(str(spinner_new.trail + [f'r{r}'] + sp.trail[::-1]))
+                    file1.write("\n")
                     exit()
         end_spinners = new_spinners
         pb.close()
