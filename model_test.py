@@ -18,8 +18,19 @@ def test_rotation_repitition():
         spinner.rotate()
     end_state = str(spinner)
     assert start_state == end_state, f"{start_state} != {end_state}"
-    
+
+def test_flip_repitition():
+    """ test that 2 flips gives the same item
+    """
+    spinner = get_solved_spinner()
+    start_state = str(spinner)
+    spinner.flip()
+    spinner.flip()
+    end_state = str(spinner)
+    assert start_state == end_state, f"{start_state} != {end_state}"
+   
 
 if __name__ == "__main__":
 
     test_rotation_repitition()
+    test_flip_repitition()

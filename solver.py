@@ -2,6 +2,8 @@ from typing import Literal
 import copy
 import tqdm
 
+FLIPS = 0
+ROTATIONS = 0
 
 class HashList():
     def __init__(self):
@@ -123,14 +125,69 @@ class MoonSpinner():
         self.tris[8] = tmp
         self.tris[9] = tmp_p1
 
-    def in_list(self, l):
-        """ check if this spinner is represented in a list of strings
+    def flip(self):
+        """ a flip is the equivalent of turning the spinner over across a vertical line
+            of symmetry so the 0th lobe remain at the top
         """
+        # sails
+        tmp = self.sails[1]
+        self.sails[1] = self.sails[4]
+        self.sails[4] = tmp
+        tmp = self.sails[2]
+        self.sails[2] = self.sails[3]
+        self.sails[3] = tmp
+
+        # pents
+        tmp = self.pents[0]
+        self.pents[0] = self.pents[4]
+        self.pents[4] = tmp
+        tmp = self.pents[1]
+        self.pents[1] = self.pents[3]
+        self.pents[3] = tmp
+        tmp = self.pents[5]
+        self.pents[5] = self.pents[6]
+        self.pents[6] = tmp
+
+        # tris
+        tmp = self.tris[0]
+        self.tris[0] = self.tris[9]
+        self.tris[9] = tmp
+        tmp = self.tris[1]
+        self.tris[1] = self.tris[8]
+        self.tris[8] = tmp
+        tmp = self.tris[2]
+        self.tris[2] = self.tris[7]
+        self.tris[7] = tmp
+        tmp = self.tris[3]
+        self.tris[3] = self.tris[6]
+        self.tris[6] = tmp
+        tmp = self.tris[4]
+        self.tris[4] = self.tris[5]
+        self.tris[5] = tmp
+        tmp = self.tris[10]
+        self.tris[10] = self.tris[11]
+        self.tris[11] = tmp
+
+
+    def in_list(self, l):
+        """ check if this spinner is represented in a list of strings.
+
+        Checks all possible rotations and flips for membership
+        """
+        global ROTATIONS
+        global FLIPS
         found = False
         for rotation in range(5):
             self.rotate()
             if l.member(str(self)):
                 found = True
+                if rotation != 4:
+                    ROTATIONS += 1 
+            self.flip()
+            if l.member(str(self)):
+                found = True
+                FLIPS += 1
+            self.flip()
         return found
 
 
@@ -203,7 +260,9 @@ if __name__ == "__main__":
     Ensure that nodes are not visited twice. Consider all rotations of a state to be equal.
     The first state that appears in both the starting exploration and the ending exploration is the most efficient solution. 
     """
-    while True:
+
+    file1 = open("solved_spinners.txt", "a")
+    while len(start_spinners) > 0:
         new_spinners = []
         pb = tqdm.tqdm(total = len(start_spinners) + len(end_spinners), leave=False)
         for spinner in start_spinners:
@@ -211,46 +270,14 @@ if __name__ == "__main__":
             for i in range(5):
                 spinner_new = copy.deepcopy(spinner)
                 spinner_new.move(i)
-                # breakpoint()
                 if not spinner_new.in_list(start_explored):
                     new_spinners.append(spinner_new)
                     start_explored.add(str(spinner_new))
-                if spinner_new.in_list(end_explored):
-                    print("Found a path to the end!")
-                    for sp in end_spinners:
-                        eq, r = sp.eq_rotation(spinner_new)
-                        if eq:
-                            print(f"{len(spinner_new.trail + sp.trail[::-1])} moves: " + str(spinner_new.trail + [f'r{r}'] + sp.trail[::-1]))
-                    print(f"Explored {len(start_explored) + len(end_explored)} states!")
-                    file1 = open("solved_spinners.txt", "a")
-                    file1.write(str(spinner_new.trail + [f'r{r}'] + sp.trail[::-1]))
-                    file1.write("\n")
-                    exit()
+                    file1.write(f"{str(spinner_new)}: {str(spinner_new.trail)}\n")
         start_spinners = new_spinners
-        new_spinners = []
-        for spinner in end_spinners:
-            pb.update(1)
-            for i in range(5):
-                spinner_new = copy.deepcopy(spinner)
-                spinner_new.move(i)
-                if not spinner_new.in_list(end_explored):
-                    new_spinners.append(spinner_new)
-                    end_explored.add(str(spinner_new))
-                if spinner_new.in_list(start_explored):
-                    print("Found a path to the end!")
-                    for sp in start_spinners:
-                        eq, r = sp.eq_rotation(spinner_new)
-                        if eq:
-                            print(f"{len(sp.trail + spinner_new.trail[::-1])} moves: " + str(sp.trail + [f'r{r}'] +  spinner_new.trail[::-1]))
-                    print(f"Explored {len(start_explored) + len(end_explored)} states!")
-                    file1 = open("solved_spinners.txt", "a")
-                    file1.write(str(spinner_new.trail + [f'r{r}'] + sp.trail[::-1]))
-                    file1.write("\n")
-                    exit()
-        end_spinners = new_spinners
         pb.close()
         depth += 1
-        print(f"Explored to depth: {str(depth)}\n\tnumber of states: {len(start_explored) + len(end_explored)}\n\tnumber of spinners: {len(start_spinners) + len(end_spinners)}")
+        print(f"Explored to depth: {str(depth)}\n\tnumber of states: {len(start_explored) + len(end_explored)}\n\tnumber of spinners: {len(start_spinners) + len(end_spinners)}\n\tnumber of rotations:{ROTATIONS}\n\tnumber of flips:{FLIPS}")
         
 
 
