@@ -207,51 +207,18 @@ if __name__ == "__main__":
     start_spinner = MoonSpinner(start_sails, start_pents, start_tris)
 
 
-    end_sails = ['r','b','p','o','r','g']
-    end_pents = ['b','b','o','o','r','g','g']
-    end_tris =  ['g','b','b','g','o','o','o','o','r','r','g','g']
+    solved_sails = ['r','b','p','o','r','g']
+    solved_pents = ['b','b','o','o','r','g','g']
+    solved_tris =  ['g','b','b','g','o','o','o','o','r','r','g','g']
     
-    end_spinner = MoonSpinner(end_sails, end_pents, end_tris)
-
-    start_spinner = copy.deepcopy(end_spinner)
-    start_spinner.move(2)
-    start_spinner.move(1)
-    start_spinner.move(0)
-    start_spinner.move(4)
-    start_spinner.move(3)
-    start_spinner.move(0)
-    start_spinner.move(2)
-    start_spinner.move(4)
-    start_spinner.move(1)
-    start_spinner.move(3)
-    start_spinner.move(0)
-    start_spinner.move(2)
-    start_spinner.move(4)
-    start_spinner.move(1)
-    start_spinner.move(2)
-    start_spinner.move(3)
-    start_spinner.move(0)
-    start_spinner.move(2)
-    start_spinner.move(4)
-    start_spinner.move(1)
-    start_spinner.move(2)
-    start_spinner.trail = []
-
-    # end_spinner.move(0)
-
-    #print(str(end_spinner))
-    # exit()
+    solved_spinner = MoonSpinner(solved_sails, solved_pents, solved_tris)
 
     start_spinners = []
-    end_spinners = []
 
-    start_spinners.append(start_spinner)
-    end_spinners.append(end_spinner)
+    start_spinners.append(solved_spinner)
 
     start_explored = HashList()
     start_explored.add(str(start_spinner))
-    end_explored = HashList()
-    end_explored.add(str(end_spinner))
 
     depth = 0
 
@@ -264,7 +231,7 @@ if __name__ == "__main__":
     file1 = open("solved_spinners.txt", "a")
     while len(start_spinners) > 0:
         new_spinners = []
-        pb = tqdm.tqdm(total = len(start_spinners) + len(end_spinners), leave=False)
+        pb = tqdm.tqdm(total = len(start_spinners), leave=False)
         for spinner in start_spinners:
             pb.update(1)
             for i in range(5):
@@ -277,7 +244,5 @@ if __name__ == "__main__":
         start_spinners = new_spinners
         pb.close()
         depth += 1
-        print(f"Explored to depth: {str(depth)}\n\tnumber of states: {len(start_explored) + len(end_explored)}\n\tnumber of spinners: {len(start_spinners) + len(end_spinners)}\n\tnumber of rotations:{ROTATIONS}\n\tnumber of flips:{FLIPS}")
-        
-
+        print(f"Explored to depth: {str(depth)}\n\tnumber of states: {len(start_explored)}\n\tnumber of spinners: {len(start_spinners)}\n\tnumber of rotations:{ROTATIONS}\n\tnumber of flips:{FLIPS}")
 
